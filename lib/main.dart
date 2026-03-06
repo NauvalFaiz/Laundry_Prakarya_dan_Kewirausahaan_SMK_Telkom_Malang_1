@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:prakarya_dan_kewirausahaan/Screens/Splace/OnboardScrens.dart';
-import 'package:prakarya_dan_kewirausahaan/Screens/Splace/first_screnns.dart';
+import 'Screens/splash_screen/OnboardScrens.dart';
+import 'Screens/splash_screen/first_screnns.dart';
 
 void main() {
   runApp(
