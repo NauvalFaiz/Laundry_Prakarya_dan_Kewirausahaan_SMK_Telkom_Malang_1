@@ -38,6 +38,9 @@ dependencies:
   gradient_borders: ^1.0.2
   shared_preferences: ^2.5.4
   flutter_card_swiper: ^7.2.0
+  dio: ^5.9.2
+  animate_do: ^5.1.0
+  flutter_svg: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -67,6 +70,10 @@ flutter:
     - assets/bawah.png
     - assets/mobil.png
     - assets/abstrac.png
+    - assets/laundry.jpg
+    - assets/instan.jpg
+    - assets/deliver.jpg
+    - assets/Background.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
