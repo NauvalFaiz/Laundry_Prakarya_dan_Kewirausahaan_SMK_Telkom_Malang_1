@@ -14,8 +14,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<AuthModel> login(String identifier, String password) async {
     try {
-      final response = await dio.post('/login', data: {
-        'identifier': identifier,
+      final response = await dio.post('login', data: {
+        'login': identifier, // Backend expects 'login'
         'password': password,
       });
       return AuthModel.fromJson(response.data);
@@ -27,12 +27,21 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<AuthModel> register(String name, String identifier, String password) async {
     try {
-      final response = await dio.post('/register', data: {
+      // Determine if identifier is email or phone
+      final isEmail = identifier.contains('@');
+      final data = {
         'name': name,
-        'identifier': identifier,
         'password': password,
-        'password_confirmation': password, // Assuming same for simplicity unless specified
-      });
+        'password_confirmation': password,
+      };
+
+      if (isEmail) {
+        data['email'] = identifier;
+      } else {
+        data['phone'] = identifier;
+      }
+
+      final response = await dio.post('register', data: data);
       return AuthModel.fromJson(response.data);
     } on DioException catch (e) {
       throw Exception(e.response?.data['message'] ?? 'Gagal mendaftar');
