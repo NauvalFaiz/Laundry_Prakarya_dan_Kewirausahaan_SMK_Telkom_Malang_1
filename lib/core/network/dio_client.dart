@@ -5,7 +5,7 @@ class DioClient {
 
   DioClient() : _dio = Dio(
     BaseOptions(
-      baseUrl: 'https://api.example.com', // TODO: Ganti dengan Base URL API Anda
+      baseUrl: 'http://192.168.100.23:8000/api',
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {

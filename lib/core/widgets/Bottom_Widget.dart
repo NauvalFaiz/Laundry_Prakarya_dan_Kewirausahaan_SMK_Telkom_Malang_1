@@ -3,14 +3,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 
 class BottomWidget extends StatelessWidget {
-  const BottomWidget({super.key, required this.label, required this.route});
+  const BottomWidget({super.key, required this.label, required this.route, this.onPressed});
   final String label;
   final String route;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: onPressed ?? () {
         Navigator.pushReplacementNamed(context, route);
       },
       child: Container(
