@@ -15,7 +15,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<AuthModel> login(String identifier, String password) async {
     try {
       final response = await dio.post('login', data: {
-        'login': identifier, // Backend expects 'login'
+        'login': identifier,
         'password': password,
       });
       return AuthModel.fromJson(response.data);

@@ -1,7 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:prakarya_dan_kewirausahaan/core/widgets/Bottom_Widget.dart';
+import 'package:prakarya_dan_kewirausahaan/core/utils/session_manager.dart';
 
 class FirstScrenns extends StatefulWidget {
   const FirstScrenns({super.key});
@@ -14,12 +14,25 @@ class _FirstScrennsState extends State<FirstScrenns> {
   @override
   void initState() {
     super.initState();
-    // Berpindah ke Onboard setelah animasi selesai (delay 3.5 detik)
+    // Tampilkan splash lalu cek session
     Future.delayed(const Duration(milliseconds: 3500), () {
       if (mounted) {
-        Navigator.pushReplacementNamed(context, "/Onboard");
+        _checkSession();
       }
     });
+  }
+
+  Future<void> _checkSession() async {
+    final isLoggedIn = await SessionManager.isLoggedIn();
+    if (!mounted) return;
+
+    if (isLoggedIn) {
+      // Sudah login → langsung ke Home/Dashboard
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      // Belum login → ke Onboarding
+      Navigator.pushReplacementNamed(context, '/Onboard');
+    }
   }
 
   @override
