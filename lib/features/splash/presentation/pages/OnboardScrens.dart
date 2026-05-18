@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:prakarya_dan_kewirausahaan/core/widgets/Bottom_Widget.dart';
 
@@ -184,7 +185,7 @@ class _OnboardScrensState extends State<OnboardScrens> {
                   const SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushReplacementNamed(context, "/home");
+                      context.pushReplacement("/home");
                     },
                     child: Text(
                       "Masuk Tanpa Daftar",

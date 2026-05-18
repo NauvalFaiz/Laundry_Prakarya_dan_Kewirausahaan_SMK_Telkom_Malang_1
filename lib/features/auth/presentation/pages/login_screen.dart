@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:prakarya_dan_kewirausahaan/core/widgets/Bottom_Widget.dart';
 import 'package:prakarya_dan_kewirausahaan/core/widgets/app_pop_scope.dart';
@@ -32,6 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return AppPopScope(
       child: Stack(
         children: [
+          // Background Image
           Positioned.fill(
             child: Image.asset(
               "assets/Background.png",
@@ -46,105 +48,160 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
+          
           Scaffold(
             backgroundColor: Colors.transparent,
-            body: Center(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: BlocConsumer<AuthBloc, AuthState>(
-                    listener: (context, state) {
-                      if (state is AuthSuccess) {
-                        Navigator.pushReplacementNamed(context, '/home');
-                      } else if (state is AuthFailure) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(state.message)),
-                        );
-                      }
-                    },
-                    builder: (context, state) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          FadeInDown(
-                            child: Text(
-                              "Masuk ke\nAkun",
-                              style: GoogleFonts.syne(
-                                fontSize: 32,
-                                fontWeight: FontWeight.w900,
-                                color: const Color(0xffF1F1FF),
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          FadeInDown(
-                            delay: const Duration(milliseconds: 200),
-                            child: Text(
-                              "Selamat datang kembali di RajajoWash",
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 16,
-                                color: const Color(0xffF1F1FF).withOpacity(0.8),
-                                letterSpacing: 0.2,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 40),
-                          _formLogin("Nomor HP / Email", false, _identifierController),
-                          const SizedBox(height: 24),
-                          _formLogin("Password", true, _passwordController),
-                          const SizedBox(height: 50),
-                          state is AuthLoading
-                              ? const Center(child: CircularProgressIndicator(color: Colors.white))
-                              : BottomWidget(
-                                  label: "Masuk",
-                                  route: '/home',
-                                  onPressed: () {
-                                    if (_identifierController.text.isNotEmpty &&
-                                        _passwordController.text.isNotEmpty) {
-                                      context.read<AuthBloc>().add(
-                                            LoginRequested(
-                                              identifier: _identifierController.text,
-                                              password: _passwordController.text,
-                                            ),
-                                          );
-                                    } else {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text("Harap isi semua bidang")),
-                                      );
-                                    }
-                                  },
-                                ),
-                          const SizedBox(height: 30),
-                          Center(
-                            child: GestureDetector(
-                              onTap: () => Navigator.pushNamed(context, '/register'),
-                              child: RichText(
-                                text: TextSpan(
-                                  style: GoogleFonts.plusJakartaSans(
-                                    color: const Color(0xffF1F1FF).withOpacity(0.7),
-                                    fontSize: 14,
-                                  ),
-                                  children: [
-                                    const TextSpan(text: "Belum punya akun? "),
-                                    const TextSpan(
-                                      text: "Daftar Disini",
-                                      style: TextStyle(
-                                        color: Color(0xffF1F1FF),
-                                        fontWeight: FontWeight.bold,
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: BlocConsumer<AuthBloc, AuthState>(
+                  listener: (context, state) {
+                    if (state is AuthSuccess) {
+                      context.go('/home');
+                    } else if (state is AuthFailure) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.message)),
                       );
-                    },
-                  ),
+                    }
+                  },
+                  builder: (context, state) {
+                    final isLoading = state is AuthLoading;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 100),
+                        FadeInDown(
+                          child: Text(
+                            "Masuk Ke\nAkun Anda",
+                            style: GoogleFonts.syne(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w900,
+                              color: const Color(0xffF1F1FF),
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        FadeInDown(
+                          delay: const Duration(milliseconds: 200),
+                          child: Text(
+                            "Nikmati layanan laundry terbaik dengan RajajoWash.",
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 15,
+                              color: const Color(0xffF1F1FF).withOpacity(0.8),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 50),
+                        
+                        _buildInputField(
+                          "Email / Nomor HP", 
+                          "Masukkan email atau nomor HP", 
+                          false, 
+                          controller: _identifierController
+                        ),
+                        const SizedBox(height: 20),
+                        
+                        _buildInputField(
+                          "Password", 
+                          "Masukkan password", 
+                          true,
+                          controller: _passwordController,
+                          isObscure: obscurePassword,
+                          onToggle: () => setState(() => obscurePassword = !obscurePassword),
+                        ),
+                        
+                        const SizedBox(height: 15),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            "Lupa Password?",
+                            style: GoogleFonts.plusJakartaSans(
+                              color: const Color(0xffF1F1FF),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        
+                        const SizedBox(height: 40),
+                        
+                        isLoading 
+                          ? const Center(child: CircularProgressIndicator(color: Colors.white))
+                          : BottomWidget(
+                              label: "Masuk", 
+                              route: '/home',
+                              onPressed: () {
+                                if (_identifierController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
+                                  context.read<AuthBloc>().add(
+                                    LoginRequested(
+                                      identifier: _identifierController.text.trim(),
+                                      password: _passwordController.text,
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                        
+                        const SizedBox(height: 20),
+                        
+                        // Google Login Button (Old Style but functional)
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: OutlinedButton(
+                            onPressed: isLoading ? null : () => context.read<AuthBloc>().add(GoogleLoginRequested()),
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Colors.white),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.g_mobiledata, color: Colors.white, size: 30),
+                                const SizedBox(width: 8),
+                                Text(
+                                  "Masuk dengan Google",
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        
+                        const SizedBox(height: 30),
+                        Center(
+                          child: GestureDetector(
+                            onTap: () => context.push('/register'),
+                            child: RichText(
+                              text: TextSpan(
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: const Color(0xffF1F1FF).withOpacity(0.7),
+                                  fontSize: 14,
+                                ),
+                                children: [
+                                  const TextSpan(text: "Belum punya akun? "),
+                                  TextSpan(
+                                    text: "Daftar Disini",
+                                    style: const TextStyle(
+                                      color: Color(0xffF1F1FF),
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
@@ -154,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _formLogin(String label, bool isPassword, TextEditingController controller) {
+  Widget _buildInputField(String label, String hint, bool isPassword, {required TextEditingController controller, bool isObscure = false, VoidCallback? onToggle}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -173,34 +230,29 @@ class _LoginScreenState extends State<LoginScreen> {
             borderRadius: BorderRadius.circular(15),
             border: Border.all(color: const Color(0xffF1F1FF).withOpacity(0.3)),
           ),
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
-              child: TextFormField(
-                controller: controller,
-                style: const TextStyle(color: Colors.white),
-                obscureText: isPassword ? obscurePassword : false,
-                cursorColor: const Color(0xffF1F1FF),
-                decoration: InputDecoration(
-                  hintText: isPassword ? "••••••••" : "Email atau No HP",
-                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
-                  border: InputBorder.none,
-                  suffixIcon: isPassword
-                      ? IconButton(
-                          icon: Icon(
-                            obscurePassword ? Icons.visibility : Icons.visibility_off,
-                            color: const Color(0xffF1F1FF),
-                            size: 20,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              obscurePassword = !obscurePassword;
-                            });
-                          },
-                        )
-                      : null,
-                ),
+          child: TextFormField(
+            controller: controller,
+            style: const TextStyle(color: Colors.white),
+            obscureText: isPassword ? isObscure : false,
+            cursorColor: const Color(0xffF1F1FF),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: GoogleFonts.plusJakartaSans(
+                fontSize: 14,
+                color: Colors.white.withOpacity(0.3),
               ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+              border: InputBorder.none,
+              suffixIcon: isPassword
+                  ? IconButton(
+                      icon: Icon(
+                        isObscure ? Icons.visibility : Icons.visibility_off,
+                        color: const Color(0xffF1F1FF),
+                        size: 20,
+                      ),
+                      onPressed: onToggle,
+                    )
+                  : null,
             ),
           ),
         ),

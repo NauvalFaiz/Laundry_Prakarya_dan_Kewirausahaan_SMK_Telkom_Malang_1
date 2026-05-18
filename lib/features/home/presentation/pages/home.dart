@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import 'package:prakarya_dan_kewirausahaan/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:prakarya_dan_kewirausahaan/features/auth/presentation/bloc/auth_event.dart';
 import 'package:prakarya_dan_kewirausahaan/features/auth/presentation/bloc/auth_state.dart';
 
 import '../../../../core/widgets/time.dart';
@@ -35,7 +37,7 @@ class Home extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "$userName!",
+                  userName,
                   style: GoogleFonts.plusJakartaSans(
                     fontWeight: FontWeight.w900,
                     fontSize: 18,
@@ -43,19 +45,51 @@ class Home extends StatelessWidget {
                 ),
               ],
             ),
-            actions: const [
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.logout_rounded, color: Color(0xff0C4B89)),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text("Logout"),
+                      content: const Text("Apakah Anda yakin ingin keluar?"),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("Batal"),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            context.read<AuthBloc>().add(LogoutRequested());
+                          },
+                          child: const Text("Keluar", style: TextStyle(color: Colors.red)),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 25),
+                padding: const EdgeInsets.only(right: 20, left: 10),
                 child: CircleAvatar(
-                  radius: 25,
-                  backgroundImage: NetworkImage(
-                    'https://i.pinimg.com/1200x/0e/9b/7d/0e9b7d4d5bb319258d168fd17861dc0c.jpg',
-                  ),
+                  radius: 20,
+                  backgroundColor: const Color(0xff0C4B89),
+                  backgroundImage: (state is AuthSuccess && state.authModel.user?.avatar != null)
+                      ? NetworkImage(state.authModel.user!.avatar!)
+                      : NetworkImage('https://ui-avatars.com/api/?name=$userName&background=0C4B89&color=fff'),
                 ),
               ),
             ],
           ),
-          body: Padding(
+          body: BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) {
+              if (state is AuthUnauthenticated) {
+                context.go('/login');
+              }
+            },
+            child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,6 +172,7 @@ class Home extends StatelessWidget {
                 ),
               ],
             ),
+          ),
           ),
         );
       },

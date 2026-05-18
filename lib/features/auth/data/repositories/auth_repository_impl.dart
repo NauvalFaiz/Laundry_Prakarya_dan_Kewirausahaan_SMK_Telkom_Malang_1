@@ -13,7 +13,28 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<AuthModel> register(String name, String identifier, String password) async {
+  Future<AuthModel> register(
+      String name, String identifier, String password) async {
     return await remoteDataSource.register(name, identifier, password);
+  }
+
+  @override
+  Future<bool> loginWithGoogle() async {
+    return await remoteDataSource.loginWithGoogle();
+  }
+
+  @override
+  Future<AuthModel> syncGoogleUser(String supabaseAccessToken) async {
+    return await remoteDataSource.syncGoogleUser(supabaseAccessToken);
+  }
+
+  @override
+  Future<AuthModel> getProfile() async {
+    return await remoteDataSource.getProfile();
+  }
+
+  @override
+  Future<void> logout() async {
+    await remoteDataSource.logout();
   }
 }

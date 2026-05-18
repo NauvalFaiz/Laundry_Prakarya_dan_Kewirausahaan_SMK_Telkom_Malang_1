@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:prakarya_dan_kewirausahaan/core/widgets/Bottom_Widget.dart';
 import 'package:prakarya_dan_kewirausahaan/core/widgets/app_pop_scope.dart';
@@ -61,7 +62,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               elevation: 0,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back_ios, color: Color(0xffF1F1FF)),
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => context.pop(),
               ),
             ),
             body: SingleChildScrollView(
@@ -70,7 +71,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: BlocConsumer<AuthBloc, AuthState>(
                   listener: (context, state) {
                     if (state is AuthSuccess) {
-                      Navigator.pushReplacementNamed(context, '/home');
+                      context.go('/home');
                     } else if (state is AuthFailure) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(state.message)),
@@ -78,6 +79,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     }
                   },
                   builder: (context, state) {
+                    final isLoading = state is AuthLoading;
+
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -126,7 +129,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         
                         const SizedBox(height: 50),
-                        state is AuthLoading 
+                        isLoading 
                           ? const Center(child: CircularProgressIndicator(color: Colors.white))
                           : BottomWidget(
                             label: "Daftar Sekarang", 
@@ -138,8 +141,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 if (_passwordController.text == _confirmPasswordController.text) {
                                   context.read<AuthBloc>().add(
                                     RegisterRequested(
-                                      name: _nameController.text,
-                                      identifier: _identifierController.text,
+                                      name: _nameController.text.trim(),
+                                      identifier: _identifierController.text.trim(),
                                       password: _passwordController.text,
                                     ),
                                   );
@@ -159,7 +162,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 30),
                         Center(
                           child: GestureDetector(
-                            onTap: () => Navigator.pop(context),
+                            onTap: () => context.pop(),
                             child: RichText(
                               text: TextSpan(
                                 style: GoogleFonts.plusJakartaSans(
