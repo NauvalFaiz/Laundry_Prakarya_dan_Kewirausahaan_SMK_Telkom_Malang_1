@@ -209,7 +209,7 @@ class _SelectServiceScreenState extends State<SelectServiceScreen> {
                         final service = entry.value;
                         return InkWell(
                           onTap: () {
-                            context.push('/create-order', extra: service);
+                            context.push('/create-order', extra: service.toJson());
                           },
                           child: Container(
                             padding: const EdgeInsets.symmetric(

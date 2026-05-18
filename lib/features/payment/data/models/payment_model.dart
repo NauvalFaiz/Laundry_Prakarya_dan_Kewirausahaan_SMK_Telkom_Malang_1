@@ -109,6 +109,33 @@ class OrderDetailModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'user_id': userId,
+      'owner_id': ownerId,
+      'service_id': serviceId,
+      'laundry_location': laundryLocation,
+      'delivery_type': deliveryType,
+      'pickup_type': pickupType,
+      'payment_method': paymentMethod,
+      'payment_code': paymentCode,
+      'payment_token': paymentToken,
+      'payment_token_expires_at': paymentTokenExpiresAt,
+      'promo_code': promoCode,
+      'discount': discount,
+      'total_price': totalPrice,
+      'status': status,
+      'payment_status': paymentStatus,
+      'paid_at': paidAt,
+      'image_url': imageUrl,
+      'points_granted': pointsGranted,
+      'created_at': createdAt,
+      'items': items?.map((e) => e.toJson()).toList(),
+      'histories': histories?.map((e) => e.toJson()).toList(),
+    };
+  }
+
   /// Check if payment token is expired
   bool get isTokenExpired {
     if (paymentTokenExpiresAt == null) return true;
@@ -143,6 +170,15 @@ class OrderItemModel {
       price: json['price'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'qty': qty,
+      'price': price,
+    };
+  }
 }
 
 class OrderHistoryModel {
@@ -160,6 +196,15 @@ class OrderHistoryModel {
       note: json['note'],
       createdAt: json['created_at'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'status': status,
+      'note': note,
+      'created_at': createdAt,
+    };
   }
 }
 

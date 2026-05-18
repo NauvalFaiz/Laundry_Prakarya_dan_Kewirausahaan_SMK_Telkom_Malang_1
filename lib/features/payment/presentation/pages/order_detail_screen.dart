@@ -179,7 +179,7 @@ class OrderDetailScreen extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  context.push('/order-tracking', extra: order);
+                  context.push('/order-tracking', extra: order.toJson());
                 },
                 icon: const Icon(Icons.timeline_rounded, size: 20),
                 label: Text(

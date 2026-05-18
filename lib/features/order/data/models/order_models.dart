@@ -33,6 +33,19 @@ class LaundryModel {
           : null,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'laundry_name': laundryName,
+      'laundry_address': laundryAddress,
+      'phone': phone,
+      'status': status,
+      'services': services?.map((e) => e.toJson()).toList(),
+    };
+  }
 }
 
 class ServiceModel {
@@ -67,6 +80,19 @@ class ServiceModel {
       imageUrl: json['image_url'],
       owner: json['owner'] != null ? LaundryModel.fromJson(json['owner']) : null,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'owner_id': ownerId,
+      'name': name,
+      'unit_type': unitType,
+      'price': price,
+      'is_active': isActive,
+      'image_url': imageUrl,
+      'owner': owner?.toJson(),
+    };
   }
 }
 

@@ -12,7 +12,7 @@ class EnvConfig {
   static const String googleWebClientId = '147816297252-nv94nlcppihflrigneru9lc9ri94ohhg.apps.googleusercontent.com'; // Contoh / Placeholder jika belum ada
 
   // Laravel API
-  static const String apiBaseUrl = 'http://192.168.1.17:8000/api/mobile/';
+  static const String apiBaseUrl = 'http://192.168.100.164:8000/api/mobile/';
 
   // Deep Link (OAuth Callback)
   static const String callbackScheme = 'io.supabase.rajawash';

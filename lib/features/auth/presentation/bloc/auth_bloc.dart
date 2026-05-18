@@ -19,6 +19,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SupabaseAuthChanged>(_onSupabaseAuthChanged);
     on<CheckSessionRequested>(_onCheckSession);
     on<LogoutRequested>(_onLogoutRequested);
+    on<UpdateProfileRequested>(_onUpdateProfile);
 
     // Listen ke Supabase auth state changes (untuk OAuth callback)
     _listenToSupabaseAuth();
@@ -170,6 +171,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     await authRepository.logout();
     emit(AuthUnauthenticated());
+  }
+
+  // ── Update Profile ──
+  Future<void> _onUpdateProfile(
+    UpdateProfileRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+    try {
+      final result = await authRepository.updateProfile(event.name, event.email);
+      
+      await storage.saveUserInfo(
+        name: result.user?.name,
+        id: result.user?.id,
+        email: result.user?.email,
+        avatar: result.user?.avatar,
+        role: result.user?.role,
+      );
+
+      emit(AuthSuccess(authModel: result));
+    } catch (e) {
+      emit(AuthFailure(message: e.toString().replaceAll('Exception: ', '')));
+    }
   }
 
   @override

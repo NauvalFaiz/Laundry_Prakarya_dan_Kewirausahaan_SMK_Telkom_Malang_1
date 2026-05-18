@@ -15,6 +15,9 @@ import 'package:prakarya_dan_kewirausahaan/features/order/presentation/pages/cre
 import 'package:prakarya_dan_kewirausahaan/features/order/data/models/order_models.dart';
 import 'package:prakarya_dan_kewirausahaan/features/order/presentation/pages/order_tracking_screen.dart';
 import 'package:prakarya_dan_kewirausahaan/features/payment/data/models/payment_model.dart';
+import 'package:prakarya_dan_kewirausahaan/features/profile/presentation/pages/profile_screen.dart';
+import 'package:prakarya_dan_kewirausahaan/features/profile/presentation/pages/membership_screen.dart';
+import 'package:prakarya_dan_kewirausahaan/features/profile/presentation/pages/settings_screen.dart';
 
 import '../../features/order/presentation/bloc/order_event.dart';
 
@@ -82,7 +85,8 @@ class AppRouter {
         path: '/create-order',
         name: 'create-order',
         builder: (context, state) {
-          final service = state.extra as ServiceModel;
+          final serviceJson = state.extra as Map<String, dynamic>;
+          final service = ServiceModel.fromJson(serviceJson);
           return BlocProvider(
             create: (_) => sl<OrderBloc>(),
             child: CreateOrderScreen(service: service),
@@ -93,9 +97,25 @@ class AppRouter {
         path: '/order-tracking',
         name: 'order-tracking',
         builder: (context, state) {
-          final order = state.extra as OrderDetailModel;
+          final orderJson = state.extra as Map<String, dynamic>;
+          final order = OrderDetailModel.fromJson(orderJson);
           return OrderTrackingScreen(order: order);
         },
+      ),
+      GoRoute(
+        path: '/profile',
+        name: 'profile',
+        builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: '/membership',
+        name: 'membership',
+        builder: (context, state) => const MembershipScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
   );

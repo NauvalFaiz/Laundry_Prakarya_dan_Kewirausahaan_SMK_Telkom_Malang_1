@@ -51,3 +51,15 @@ class CheckSessionRequested extends AuthEvent {}
 
 /// Logout
 class LogoutRequested extends AuthEvent {}
+
+/// Update Profile
+class UpdateProfileRequested extends AuthEvent {
+  final String name;
+  final String email;
+
+  UpdateProfileRequested({required this.name, required this.email});
+
+  @override
+  List<Object?> get props => [name, email];
+}
+

@@ -6,5 +6,6 @@ abstract class AuthRepository {
   Future<bool> loginWithGoogle();
   Future<AuthModel> syncGoogleUser(String supabaseAccessToken);
   Future<AuthModel> getProfile();
+  Future<AuthModel> updateProfile(String name, String email);
   Future<void> logout();
 }

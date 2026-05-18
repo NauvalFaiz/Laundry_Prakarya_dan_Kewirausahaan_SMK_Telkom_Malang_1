@@ -53,6 +53,7 @@ dependencies:
   intl: ^0.20.2
   image_gallery_saver_plus: ^4.0.1
   permission_handler: ^11.3.1
+  geolocator: ^14.0.1
 
 dev_dependencies:
   flutter_test:

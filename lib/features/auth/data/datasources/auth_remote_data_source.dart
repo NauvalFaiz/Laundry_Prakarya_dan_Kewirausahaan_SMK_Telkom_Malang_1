@@ -11,6 +11,7 @@ abstract class AuthRemoteDataSource {
   Future<bool> loginWithGoogle();
   Future<AuthModel> syncGoogleUser(String supabaseAccessToken);
   Future<AuthModel> getProfile();
+  Future<AuthModel> updateProfile(String name, String email);
   Future<void> logout();
 }
 
@@ -130,6 +131,29 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
     } on DioException catch (e) {
       throw Exception(e.response?.data['message'] ?? 'Gagal mengambil profil');
+    }
+  }
+
+  @override
+  Future<AuthModel> updateProfile(String name, String email) async {
+    try {
+      final response = await dio.put('user', data: {
+        'name': name,
+        'email': email,
+      });
+
+      final dynamic responseData = response.data;
+      final Map<String, dynamic> userJson = (responseData is Map && responseData.containsKey('data'))
+          ? responseData['data']
+          : responseData;
+
+      return AuthModel(
+        user: UserModel.fromJson(userJson),
+        token: await storage.getAccessToken(),
+        success: true,
+      );
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Gagal memperbarui profil');
     }
   }
 

@@ -9,6 +9,8 @@ import 'package:prakarya_dan_kewirausahaan/features/order/presentation/bloc/orde
 import 'package:prakarya_dan_kewirausahaan/features/order/presentation/bloc/order_state.dart';
 import 'package:prakarya_dan_kewirausahaan/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:prakarya_dan_kewirausahaan/features/auth/presentation/bloc/auth_state.dart';
+import 'package:prakarya_dan_kewirausahaan/core/services/location_service.dart';
+import 'package:geolocator/geolocator.dart';
 
 class CreateOrderScreen extends StatefulWidget {
   final ServiceModel service;
@@ -24,6 +26,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   String _deliveryType = 'standart';
   String _pickupType = 'pickup';
   String _paymentMethod = 'qris';
+  Position? _currentPosition;
+  bool _isLoadingLocation = false;
 
   int get _totalPrice => widget.service.price * _qty;
 
@@ -156,8 +160,25 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                             borderSide: BorderSide.none,
                           ),
                           prefixIcon: const Icon(Icons.location_on_rounded, color: Color(0xFF4F46E5)),
+                          suffixIcon: _isLoadingLocation 
+                              ? const Padding(
+                                  padding: EdgeInsets.all(12),
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              : IconButton(
+                                  icon: const Icon(Icons.my_location_rounded, color: Color(0xFF4F46E5)),
+                                  onPressed: _getLocation,
+                                  tooltip: 'Gunakan Lokasi Saat Ini',
+                                ),
                         ),
                       ),
+                      if (_currentPosition != null) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          'Koordinat: ${_currentPosition!.latitude}, ${_currentPosition!.longitude}',
+                          style: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF10B981), fontWeight: FontWeight.w600),
+                        ),
+                      ],
 
                       const SizedBox(height: 20),
 
@@ -400,7 +421,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     final request = CreateOrderRequest(
       ownerId: widget.service.ownerId ?? 0,
       serviceId: widget.service.id,
-      laundryLocation: _locationController.text,
+      laundryLocation: _currentPosition != null 
+          ? '${_locationController.text} (Lat: ${_currentPosition!.latitude}, Lng: ${_currentPosition!.longitude})'
+          : _locationController.text,
       deliveryType: _deliveryType,
       pickupType: _pickupType,
       paymentMethod: _paymentMethod,
@@ -414,5 +437,33 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     );
 
     context.read<OrderBloc>().add(CreateNewOrder(request: request));
+  }
+
+  Future<void> _getLocation() async {
+    setState(() {
+      _isLoadingLocation = true;
+    });
+
+    try {
+      final position = await LocationService.getCurrentLocation();
+      setState(() {
+        _currentPosition = position;
+        // Opsional: jika text kosong, isi dengan koordinat sementara
+        if (_locationController.text.isEmpty) {
+          _locationController.text = 'Lokasi Saya';
+        }
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Lokasi berhasil didapatkan'), backgroundColor: Color(0xFF10B981)),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
+      );
+    } finally {
+      setState(() {
+        _isLoadingLocation = false;
+      });
+    }
   }
 }
